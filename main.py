@@ -1,12 +1,11 @@
 import streamlit as st
-import toml
 import google.generativeai as genai
 from fpdf import FPDF
 from io import BytesIO
 
 # --- Load API Key from TOML ---
-secrets = toml.load("secrets.toml")
-genai.configure(api_key=secrets["GEMINI_API_KEY"])
+# secrets = toml.load("secrets.toml")
+genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 model = genai.GenerativeModel("gemini-2.0-flash")
 
 # --- Topic Prompts ---
