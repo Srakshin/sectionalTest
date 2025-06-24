@@ -113,9 +113,9 @@ def create_pdf(contents, title):
         pdf.multi_cell(0, 10, section)
         pdf.ln()
 
-    buffer = BytesIO()
-    pdf.output(buffer)
-    buffer.seek(0)
+    # ✅ Use dest='S' to return content as a string
+    pdf_output = pdf.output(dest='S').encode('latin1')  # Converts to bytes
+    buffer = BytesIO(pdf_output)
     return buffer
 
 
