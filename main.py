@@ -293,7 +293,7 @@ def create_pdf(contents, title):
         pdf.ln()
 
     # ✅ Use dest='S' to return content as a string
-    pdf_output = pdf.output(dest='S')  # Converts to bytes
+    pdf_output = pdf.output(dest='S').encode('latin1')   # Converts to bytes
     buffer = BytesIO(pdf_output)
     return buffer
 
