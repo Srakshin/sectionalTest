@@ -3,12 +3,11 @@ import google.generativeai as genai
 from fpdf import FPDF
 from io import BytesIO
 
-# --- Load API Key from TOML ---
-# secrets = toml.load("secrets.toml")
-genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+
+genai.configure(api_key=st.secrets["AIzaSyBNVIZx9rtGNWdSGZNH9AJtZWhoSV5aihE"])
 model = genai.GenerativeModel("gemini-2.0-flash")
 
-# --- Topic Prompts ---
+
 topic_prompts = {
     "Critical Reasoning": "Generate a CLAT-level critical reasoning paragraph followed by 6 questions and answers.",
     "General Knowledge": "Write a paragraph covering current affairs or static GK (suitable for CLAT/AILET) with 6 questions and answers.",
@@ -17,7 +16,7 @@ topic_prompts = {
     "Reading Comprehension": "Create a CLAT-level RC passage with 6 directly linked questions and their answers."
 }
 
-# --- Generate content using Gemini ---
+
 def generate_study_material(topic, count):
     all_sections = []
 
@@ -25,60 +24,80 @@ def generate_study_material(topic, count):
         if topic == "General Knowledge":
             # (keep the current GK prompt here — already handled)
             prompt = f"""
-Generate one General Knowledge & Current Affairs passage (600–750 words) in the tone of 'The Hindu Insight' or 'Indian Express Explained'.
-
-Start the passage with inline paragraph numbering (e.g., "1 India’s foreign policy…", "2 The changing nature…").
-
-The passage must be neutral and explanatory, giving context/background but not directly revealing the answers to follow-up questions.
-
-Then, generate **6 extremely difficult multiple-choice questions** numbered 1.1 to 1.6. These should:
-- Be based on the theme of the passage
-- Require deep factual knowledge
-- NOT be directly answerable from the passage
-- Include 4 options (A–D) with tricky distractors like similar names, dates, agencies, schemes, etc.
-
-End your output with an answer key in this exact format (no explanations):
-
-1.1 – (C)  
-1.2 – (A)  
-1.3 – (D)  
-1.4 – (B)  
-1.5 – (C)  
-1.6 – (A)
+TONE AND STYLE:
+Write in a formal, explanatory tone like a top newspaper's "Explained" section.
+Contextual and background-based, not opinionated.
+Do not directly state answers to any GK questions.
+Paragraphs should build conceptual understanding or current relevance.
+PASSAGE INSTRUCTIONS:
+Start with inline numbering — not on a separate line.
+Length: 600 to 750 words.
+Must provide context only.
+Do not include any facts that directly give away answers.
+QUESTIONS (1.1 to 1.5):
+Exactly 5 MCQs per passage.
+Each question must be factual and verifiable.
+Do not make questions directly answerable from the passage.
+Allowed types:
+Which of the following is true / not true
+Match the following
+Chronological order
+Identify correct organisation/authority
+Pure fact-check MCQs
+QUESTION DIFFICULTY:
+All questions must be difficult.
+At least 3 should involve confusing or close options.
+No general or guessable trivia.
+OPTIONS:
+4 choices: (A), (B), (C), (D)
+Only one must be correct.
+Distractors must be reasonable but incorrect.
+Use closely related names, institutions, or events to confuse.
+ANSWER KEY:
+After all five questions, provide a detailed answer key.
+Format:
+1.1 : (C)
+Then explain why (C) is correct and why the others are wrong.
+FINAL STRUCTURE
+GK Passage (600-750 words)
+Questions 1.1 to 1.5
+Answer Key with full explanations
 """
         
         elif topic == "Legal Reasoning":
             prompt = """
-Generate 1 full-length Legal Reasoning passage (600–700 words), starting with inline numbering (e.g., "1 The doctrine of legitimate expectation...").
-
-Tone: Analytical and scholarly — as if written by a senior law professor or Supreme Court advocate.
-
-Content: 
-- Introduce one or more legal principles
-- Include definitions, rationale, conflicts, and exceptions
-- Do NOT provide factual examples, illustrations, or case applications — these will be used only in the questions
-
-Then, generate exactly 6 ultra-challenging multiple-choice questions (1.1 to 1.6) that apply the principle(s) introduced in the passage.
-
-Each question must:
-- Contain a fact scenario of at least 300 words
-- Be packed with irrelevant facts, emotional/moral distractions, and layered/misleading timelines
-- Test only the principle(s) from the passage — do NOT use external legal knowledge
-- Use real-world language, names, and framing (e.g., protests, arrests, contracts, defamation, etc.)
-
-**Options Format for Each Question:**
-- Four answer choices: (A), (B), (C), (D)
-- Exactly 2 options must say the action is *legal*, and 2 must say it is *illegal*
-- Only **one** option is correct
-- Distractors must be misleading but legally plausible
-
-Ensure:
-- At least **2 questions are thematically or factually linked**
-- At least **1 question tests a borderline or exception case**
-
-Finally, **only output a clean answer key** like this (no explanations):
-
-
+TONE AND VOICE:
+Write in the voice of a senior law professor or Supreme Court advocate.
+Keep the tone analytical, scholarly, and contemporary.
+Do not include real case names or factual examples.
+PASSAGE:
+Begin each paragraph with inline numbering.
+Length: 600 to 700 words.
+Introduce one or more legal principles with definitions, rationale, conflicts, and exceptions.
+Do not use any factual illustrations.
+QUESTIONS (1.1 to 1.6):
+Each question must have a fact scenario of at least 300 words.
+Include distractions: irrelevant facts, emotional triggers, misleading timelines.
+Test only the principle(s) from the passage.
+No external legal knowledge should be used.
+OPTIONS:
+Four choices: (A), (B), (C), (D).
+Exactly 2 must conclude the action is legal, and 2 illegal.
+Only one option is correct.
+Incorrect options must be legally plausible but flawed in logic.
+SPECIAL RULES:
+At least 2 questions must be thematically or factually linked.
+At least 1 question must test an exception or borderline case.
+ANSWER KEY:
+After all six questions, provide a detailed answer key.
+Format:
+1.1 : (C)
+Then explain why (C) is correct and why the others are wrong.
+Each explanation should be 150-200 words and clearly reasoned.
+STRUCTURE:
+Legal Passage
+Questions 1.1 to 1.6
+Answer Key with full explanations
 """
 
         else:
